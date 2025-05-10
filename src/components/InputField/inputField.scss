@@ -1,0 +1,26 @@
+.inputField {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+
+    label {
+        font-size: 12px;
+    }
+
+    input {
+        background: transparent;
+        padding: 10px 8px;
+        font-family: 'Poppins';
+        border: 1px solid white;
+        border-radius: 8px;
+        caret-color: #4ed6f5;
+        outline: none;
+        color: white;
+        transition: all 0.8s ease;
+    }
+
+    input:focus {
+        border-color: #4ed6f5;
+    }
+}

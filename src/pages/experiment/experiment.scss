@@ -1,0 +1,94 @@
+.experiment {
+    height: 100vh; /* Mỗi section chiếm toàn bộ chiều cao màn hình */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    opacity: 0;
+    animation: fadeIn 1s ease-in-out forwards;
+
+    .params {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 32px;
+        flex-wrap: wrap;
+    }
+
+    .alert {
+        font-size: 24px;
+    }
+
+    .btn {
+        animation: popUp 1.5s ease-in-out infinite alternate;
+    }
+
+    .progress {
+        .progressTitle {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        p {
+            animation: fadeInLeftToRight 0.3s ease-in-out forwards;
+        }
+    }
+
+    .completed {
+        animation: fadeIn 1.2s ease forwards;
+    }
+
+    .options {
+        display: flex;
+        gap: 40px;
+    }
+
+    .loadingCircle {
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        background-color: #4ed6f5;
+        animation: flicker 1s ease-in-out infinite alternate;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0%;
+    }
+
+    100% {
+        opacity: 100%;
+    }
+}
+
+@keyframes popUp {
+    from {
+        scale: 1;
+    }
+    to {
+        scale: 1.05;
+    }
+}
+
+@keyframes fadeInLeftToRight {
+    from {
+        opacity: 0;
+        transform: translateX(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes flicker {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.5);
+    }
+}

@@ -1,0 +1,77 @@
+.comments {
+    .write {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 20px 0;
+
+        img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input {
+            flex: 5;
+            padding: 8px;
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--textColor);
+            caret-color: var(--primary);
+            font-size: 12px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+
+    .comment {
+        display: flex;
+        margin: 20px 0;
+        gap: 10px;
+
+        img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .info {
+            flex: 5;
+            display: flex;
+            gap: 0px;
+            flex-direction: column;
+            color: var(--textColor);
+
+            span {
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+
+            p {
+                font-size: 12px;
+            }
+        }
+
+        .date {
+            flex: 1;
+            font-size: 10px;
+            align-self: center;
+            color: var(--textColorSoft);
+        }
+    }
+}

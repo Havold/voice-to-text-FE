@@ -1,0 +1,83 @@
+.history {
+    padding: 32px;
+    position: relative;
+
+    .backIcon {
+        font-size: 48px;
+        position: absolute;
+        left: 20px;
+        top: 48px;
+        animation: fadeInLeftToRight 1s ease-in-out forwards;
+        opacity: 0;
+        cursor: pointer;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 32px;
+
+        animation: fadeIn 1.2s ease forwards;
+    }
+
+    .results {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+
+        .item {
+            padding: 16px 32px;
+            border: 2px solid white;
+            border-radius: 8px;
+
+            animation: fadeInLeftToRight 1s ease-in-out forwards;
+        }
+    }
+}
+
+.params {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.param {
+    font-size: 16px;
+}
+
+.accuracy {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: end;
+
+    &.good {
+        color: rgb(0, 244, 0);
+    }
+
+    &.bad {
+        color: rgb(201, 15, 15);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0%;
+    }
+
+    100% {
+        opacity: 100%;
+    }
+}
+
+@keyframes fadeInLeftToRight {
+    from {
+        opacity: 0;
+        transform: translateX(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

@@ -1,0 +1,36 @@
+.dropDownMenu {
+    position: absolute;
+    width: 200px;
+    background-color: var(--bg);
+    box-shadow: 1px 4px 37px 2px var(--box-shadow-bold);
+    -webkit-box-shadow: 1px 4px 37px 2px var(--box-shadow-bold);
+    -moz-box-shadow: 1px 4px 37px 2px var(--box-shadow-bold);
+    border-radius: 8px;
+    overflow: hidden;
+    top: 50px;
+    right: 0px;
+
+    ul {
+        width: 100%;
+
+        a[href] {
+            width: 100%;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            list-style: none;
+            font-size: 1.6rem;
+            color: var(--textColor);
+            padding: 16px 24px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: var(--bgSoft);
+            }
+        }
+    }
+}
