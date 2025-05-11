@@ -7,11 +7,8 @@ const NavBar = () => {
     return (
         <div className="container">
             <Link to="/" className="logo">
-                hwc
+                VTG
             </Link>
-            <div className="right">
-                <Button url="/experiment">Start</Button>
-            </div>
         </div>
     );
 };

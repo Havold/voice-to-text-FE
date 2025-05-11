@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import './experiment.scss';
-import Button from '../../components/Button/Button';
+import { makeRequest } from '../../axios';
 
 // Hàm fetch dữ liệu experiment mới nhất, có delay 2 giây trước khi gọi API
 const fetchLatestExperiment = async () => {
@@ -19,101 +19,101 @@ const fetchProgress = async (jobId) => {
 };
 
 const Experiment = () => {
+    const [voice, setVoice] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const location = useLocation();
     const queryClient = useQueryClient();
     const doneRef = useRef(false); // Biến tham chiếu kiểm tra trạng thái hoàn thành
     const [btnName, setBtnName] = useState('Train Again');
-    const epoch = location.state ? Number(location.state.epoch) : -1;
-    const jobId = localStorage.getItem('jobId');
 
-    // Fetch dữ liệu của experiment mới nhất
-    const { data: experiment, isLoading: isExperimentLoading } = useQuery({
-        queryKey: ['latest_experiment'],
+    console.log(voice);
+
+    const { isPending, error, data } = useQuery({
+        queryKey: ['upload'],
         queryFn: () => {
-            if (!location.state || (location.state && doneRef.current === true)) {
-                return fetchLatestExperiment();
+            if (voice) {
+                const formData = new FormData();
+                formData.append('voice', voice);
+                return makeRequest.post(`/upload`, formData).then((res) => {
+                    console.log(res.data);
+                    mutationConvert.mutate();
+                    return res.data; // chứa file_url
+                });
             }
             return null;
         },
-        initialData: [],
     });
 
-    // Fetch tiến trình training nếu jobId tồn tại
-    const { data: progress = [], refetch } = useQuery({
-        queryKey: ['progress', jobId],
-        queryFn: () => (location.state ? fetchProgress(jobId) : null),
-        refetchInterval: doneRef.current ? 0 : 1000, // Nếu training chưa hoàn thành, fetch mỗi giây
-        initialData: [],
+    const {
+        isPending: isPendingText,
+        error: errText,
+        data: dataText,
+    } = useQuery({
+        queryKey: ['convert'],
+        queryFn: () => {
+            if (voice) {
+                return makeRequest.post(`/convert`, { filename: voice?.name }).then((res) => {
+                    setIsLoading(false);
+                    console.log(res.data);
+                    return res.data;
+                });
+            }
+            return null;
+        },
     });
 
-    // Mutation để invalid query khi training hoàn tất
+    const handleUploadFile = (e) => {
+        const file = e.target.files[0];
+        console.log(file);
+        if (file) {
+            setVoice(null);
+            setIsLoading(true);
+            mutation.mutate(file);
+        }
+    };
+
     const mutation = useMutation({
-        mutationFn: () => {},
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['latest_experiment'] }),
+        mutationFn: (newVoice) => {
+            newVoice.preview = URL.createObjectURL(newVoice);
+            setVoice(newVoice);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['upload'] });
+        },
     });
 
-    // Theo dõi tiến trình training, nếu hoàn thành thì cập nhật doneRef
-    useEffect(() => {
-        if (progress?.length === epoch) {
-            doneRef.current = true;
-            mutation.mutate();
-        }
-    }, [progress?.length, epoch]);
+    const mutationConvert = useMutation({
+        mutationFn: () => {},
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['convert'] });
+        },
+    });
 
-    // Cập nhật tên nút khi không có dữ liệu experiment
-    useEffect(() => {
-        if (!experiment) {
-            setBtnName('Create new model now!');
-        }
-    }, [experiment]);
-
-    if (isExperimentLoading) {
-        return <p>Waiting for training progress...</p>;
-    }
+    console.log(data?.file_url);
 
     return (
         <div className="experiment">
-            <h1>
-                {experiment?.accuracy || location.state
-                    ? 'Latest Experiment Results'
-                    : 'Oops! Looks like this is the first time you visit us.'}
-            </h1>
+            <h1 style={{ textAlign: 'center' }}>{voice ? 'Result' : 'Upload a file .wav that you want to convert!'}</h1>
 
-            {/* Hiển thị thông số của thí nghiệm */}
-            <div className="params">
-                <span>Batch size: {experiment?.batch_size || location.state?.batch_size}</span>
-                <span>Learning rate: {experiment?.lr || location.state?.lr}</span>
-                <span>Epoch: {experiment?.epoch || location.state?.epoch}</span>
-                <span>
-                    Hidden Layer: [{experiment?.hidden01 || location.state?.hidden01},
-                    {experiment?.hidden02 || location.state?.hidden02}]
-                </span>
-            </div>
-
-            {/* Hiển thị vòng loading nếu đang training */}
-            {progress?.length < epoch && <div className="loadingCircle"></div>}
-
-            {/* Hiển thị tiến trình training */}
-            {progress?.length > 0 && (
-                <div className="progress">
-                    <h2 className="progressTitle">Training Progress:</h2>
-                    {progress.map((p, index) => (
-                        <p key={index}>
-                            Epoch {p.epoch}: Train Loss {p.train_loss.toFixed(4)}, Val Loss {p.val_loss.toFixed(4)}
-                        </p>
-                    ))}
+            {data?.file_url && (
+                <div className="audio-player">
+                    <audio controls>
+                        <source src={data.file_url} type="audio/wav" />
+                        Your browser does not support the audio element.
+                    </audio>
                 </div>
             )}
 
-            {/* Hiển thị kết quả cuối cùng */}
-            {experiment?.accuracy !== undefined && (
-                <p className="completed">✅ Training Completed! Accuracy: {experiment.accuracy.toFixed(2)}</p>
-            )}
+            {/* Hiển thị vòng loading nếu đang training */}
+            {isLoading && <div className="loadingCircle"></div>}
+            {errText ? "Can't convert to text!" : dataText?.text}
 
             {/* Nút điều hướng */}
             <div className="options">
-                <Button url="/history">History</Button>
-                <Button url="/create">{btnName}</Button>
+                <input style={{ display: 'none' }} type="file" id="uploadVoice" onChange={handleUploadFile} />
+                <label htmlFor="uploadVoice">
+                    <div className="btn">{voice ? 'Upload Other Voice' : 'Upload Voice Now'}</div>
+                </label>
             </div>
         </div>
     );
